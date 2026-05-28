@@ -1,0 +1,218 @@
+<section class="demo-page">
+  <div class="demo-header">
+    <div class="demo-badge">Feature 13</div>
+    <h1 class="demo-title">Styling Child Components & Scoping</h1>
+    <p class="demo-subtitle">
+      Demonstrating the side-effects of <strong>::ng-deep</strong>, how scoping is bypassed, and modern styling solutions.
+    </p>
+  </div>
+
+  <div class="concept-tags">
+    <span class="tag">::ng-deep</span>
+    <span class="tag">:host</span>
+    <span class="tag">ViewEncapsulation.None</span>
+    <span class="tag">CSS Custom Properties</span>
+    <span class="tag">_ngcontent-scoping</span>
+  </div>
+
+  <!-- Main Playground Grid -->
+  <div class="playground-grid">
+    
+    <!-- Left: Controls -->
+    <div class="card control-card">
+      <div class="card-header">
+        <span>Styling Strategies</span>
+      </div>
+      <div class="control-body">
+        <p class="section-desc">Select a style override strategy to apply from the parent component:</p>
+        
+        <div class="strategy-options">
+          <label class="strategy-option" [class.active]="activeStrategy === 'none'">
+            <input type="radio" name="strategy" (change)="setStrategy('none')" [checked]="activeStrategy === 'none'">
+            <div class="option-content">
+              <span class="option-title">1. No Override (Default)</span>
+              <span class="option-desc">Components remain styled under default Emulated encapsulation.</span>
+            </div>
+          </label>
+
+          <label class="strategy-option option-naive" [class.active]="activeStrategy === 'naive'">
+            <input type="radio" name="strategy" (change)="setStrategy('naive')" [checked]="activeStrategy === 'naive'">
+            <div class="option-content">
+              <span class="option-title">2. Unscoped ::ng-deep ⚠️</span>
+              <span class="option-desc">Overrules child style, but bleeds globally, styling unrelated components!</span>
+            </div>
+          </label>
+
+          <label class="strategy-option option-safe" [class.active]="activeStrategy === 'safe'">
+            <input type="radio" name="strategy" (change)="setStrategy('safe')" [checked]="activeStrategy === 'safe'">
+            <div class="option-content">
+              <span class="option-title">3. Scoped :host ::ng-deep ✅</span>
+              <span class="option-desc">Forces style down to children, but restricts it to this parent's subtree.</span>
+            </div>
+          </label>
+
+          <label class="strategy-option option-cssvar" [class.active]="activeStrategy === 'css-var'">
+            <input type="radio" name="strategy" (change)="setStrategy('css-var')" [checked]="activeStrategy === 'css-var'">
+            <div class="option-content">
+              <span class="option-title">4. CSS Custom Properties 💎</span>
+              <span class="option-desc">Passes CSS variables through host. Clean, explicit, and modern.</span>
+            </div>
+          </label>
+
+          <label class="strategy-option option-none" [class.active]="activeStrategy === 'encap-none'">
+            <input type="radio" name="strategy" (change)="setStrategy('encap-none')" [checked]="activeStrategy === 'encap-none'">
+            <div class="option-content">
+              <span class="option-title">5. ViewEncapsulation.None Wrapper</span>
+              <span class="option-desc">Disables scoping on a wrapper component to target child selectors globally.</span>
+            </div>
+          </label>
+        </div>
+
+        <!-- Dynamic CSS explanation -->
+        <div class="css-inspector mt-4">
+          <div class="inspector-header">Compiled Selector Output</div>
+          <div class="inspector-code">
+            <pre *ngIf="activeStrategy === 'none'"><code>/* Default Scoped CSS */
+app-styling-child[_nghost-c12] .themed-box[_ngcontent-c12] {{ '{' }}
+  border: 1px solid #475569;
+  background: #1e293b;
+{{ '}' }}</code></pre>
+            <pre *ngIf="activeStrategy === 'naive'"><code>/* Bleeding Global CSS */
+.apply-naive .themed-box {{ '{' }}
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  /* Notice the absence of scoping attributes! */
+{{ '}' }}</code></pre>
+            <pre *ngIf="activeStrategy === 'safe'"><code>/* Scoped Deep CSS */
+[_nghost-c11] .themed-box {{ '{' }}
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  /* Scoped strictly to parent host elements! */
+{{ '}' }}</code></pre>
+            <pre *ngIf="activeStrategy === 'css-var'"><code>/* CSS Variables inheritance */
+app-styling-child {{ '{' }}
+  --themed-bg: #10b981;
+  --themed-border: #34d399;
+{{ '}' }}
+/* Scopes naturally through inheritance */</code></pre>
+            <pre *ngIf="activeStrategy === 'encap-none'"><code>/* ViewEncapsulation.None Output */
+.none-wrapper .pink-theme {{ '{' }}
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  /* Placed in global stylesheet header */
+{{ '}' }}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Visual Sandbox -->
+    <div class="card sandbox-card">
+      <div class="card-header">
+        <span>Visual Render Zone</span>
+      </div>
+      <div class="sandbox-body">
+        
+        <div class="sandbox-column">
+          <!-- Parent Container with conditional classes -->
+          <div class="parent-container" 
+               [class.apply-naive]="activeStrategy === 'naive'"
+               [class.apply-safe]="activeStrategy === 'safe'"
+               [style.--themed-bg]="activeStrategy === 'css-var' ? '#10b981' : null"
+               [style.--themed-border]="activeStrategy === 'css-var' ? '#34d399' : null"
+               [style.--themed-color]="activeStrategy === 'css-var' ? '#ffffff' : null"
+               [style.--themed-shadow]="activeStrategy === 'css-var' ? '0 0 12px rgba(16, 185, 129, 0.4)' : null">
+            
+            <div class="parent-label">Parent Component Scope</div>
+            
+            <!-- Child Component -->
+            <app-styling-child></app-styling-child>
+            
+            <!-- Optional Wrapper None Component -->
+            <div class="mt-4" *ngIf="activeStrategy === 'encap-none'">
+              <app-wrapper-none></app-wrapper-none>
+            </div>
+            
+          </div>
+        </div>
+
+        <div class="sandbox-column">
+          <!-- Sibling Component (Always outside parent component) -->
+          <div class="sibling-container">
+            <div class="sibling-label">Outside Parent Scope</div>
+            
+            <app-styling-sibling></app-styling-sibling>
+            
+            <div class="status-warning mt-3" *ngIf="activeStrategy === 'naive'">
+              <span class="warning-icon">⚠️</span>
+              <span><strong>Style Bleed Detected!</strong> The sibling component's <code>.themed-box</code> has been infected by the parent's unscoped <code>::ng-deep</code> override!</span>
+            </div>
+            <div class="status-success mt-3" *ngIf="activeStrategy === 'safe'">
+              <span class="success-icon">✅</span>
+              <span><strong>Styles Safely Scoped!</strong> Sibling component is unaffected because the override was nested under <code>:host</code>.</span>
+            </div>
+            <div class="status-success mt-3" *ngIf="activeStrategy === 'css-var'">
+              <span class="success-icon">✅</span>
+              <span><strong>CSS variables cleanly scoped!</strong> Variable values only cascade down the parent's DOM subtree. Sibling is untouched.</span>
+            </div>
+            <div class="status-success mt-3" *ngIf="activeStrategy === 'none'">
+              <span>Sibling is in its default state.</span>
+            </div>
+            <div class="status-warning mt-3" *ngIf="activeStrategy === 'encap-none'">
+              <span class="warning-icon">ℹ️</span>
+              <span>Wrapper styling applied globally. Sibling is unaffected because it does not match the wrapper selector.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Explainer / Interview Cards -->
+  <div class="deep-grid">
+    <div class="card explanation-card">
+      <div class="card-header"><span>Why ::ng-deep is dangerous</span></div>
+      <div class="card-body-text">
+        <p><strong>Under the Hood (Emulated Scoping):</strong></p>
+        <p>
+          Angular encapsulates styles by appending generated attributes like <code>_ngcontent-c12</code> to selectors.
+          A rule like <code>.themed-box</code> is compiled to <code>.themed-box[_ngcontent-c12]</code>.
+        </p>
+        <p>
+          When you use <code>::ng-deep</code>, the compiler is instructed to <strong>strip the scoping attributes</strong> from that selector and everything downstream. 
+          If you write:
+        </p>
+        <pre><code>::ng-deep .themed-box {{ '{' }} ... {{ '}' }}</code></pre>
+        <p>
+          It compiles to:
+        </p>
+        <pre><code>.themed-box {{ '{' }} ... {{ '}' }}</code></pre>
+        <p>
+          This is a global selector. It will bleed out and style every element with class <code>.themed-box</code> in your entire SPA until the component style is destroyed (and even then, it can remain cached in style elements under certain conditions).
+        </p>
+      </div>
+    </div>
+
+    <div class="card interview-card">
+      <div class="card-header"><span>Senior Interview Prep: Styling</span></div>
+      <div class="card-body-text">
+        <div class="qa-item">
+          <h4>Q: How does Angular simulate style encapsulation in Emulated mode?</h4>
+          <p>A: Angular adds a unique attribute (e.g., <code>_nghost-c12</code>) to the host element, and a matching attribute (e.g., <code>_ngcontent-c12</code>) to all elements inside the template. The compiler then rewrites the CSS selectors to require those attributes (e.g., <code>.title</code> becomes <code>.title[_ngcontent-c12]</code>).</p>
+        </div>
+        <div class="qa-item mt-3">
+          <h4>Q: What is the recommended alternative to ::ng-deep?</h4>
+          <p>A: Use CSS Custom Properties (Variables) on the child component that default to fallback values. The parent can then simply override the custom property values on the child's host selector. This maintains encapsulation boundaries and forms a clear, clean public styling API.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Code Viewer -->
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>
