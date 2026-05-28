@@ -1,0 +1,77 @@
+<section class="demo-page">
+  <div class="demo-header">
+    <div class="demo-badge">{{ concept.badge }}</div>
+    <h1 class="demo-title">{{ concept.title }}</h1>
+    <p class="demo-subtitle">{{ concept.subtitle }}</p>
+  </div>
+
+  <div class="concept-tags">
+    <span class="tag" *ngFor="let tag of concept.tags">{{ tag }}</span>
+  </div>
+
+  <div class="card scenario-card">
+    <div class="card-header">
+      <span>Fintech interview scenario</span>
+    </div>
+    <p>{{ concept.scenario }}</p>
+  </div>
+
+  <div class="content-grid">
+    <article class="card section-card" *ngFor="let section of concept.sections">
+      <h2>{{ section.title }}</h2>
+      <p>{{ section.body }}</p>
+      <ul>
+        <li *ngFor="let bullet of section.bullets">{{ bullet }}</li>
+      </ul>
+    </article>
+  </div>
+
+  <div class="deep-grid">
+    <div class="card process-card">
+      <div class="card-header">
+        <span>{{ concept.processTitle }}</span>
+      </div>
+      <ol>
+        <li *ngFor="let step of concept.processSteps">{{ step }}</li>
+      </ol>
+    </div>
+
+    <div class="card answer-card">
+      <div class="card-header">
+        <span>Interview-ready answer</span>
+      </div>
+      <p>{{ concept.interviewAnswer }}</p>
+      <div class="trap-list">
+        <h3>Senior traps to avoid</h3>
+        <div class="trap" *ngFor="let trap of concept.seniorTraps">{{ trap }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card comparison-card">
+    <div class="card-header">
+      <span>{{ concept.comparisonTitle }}</span>
+    </div>
+    <div class="comparison-table">
+      <div class="comparison-head">
+        <span>{{ concept.comparisonHeaders[0] }}</span>
+        <span>{{ concept.comparisonHeaders[1] }}</span>
+        <span>{{ concept.comparisonHeaders[2] }}</span>
+      </div>
+      <div class="comparison-row" *ngFor="let row of concept.comparisonRows">
+        <span>{{ row.left }}</span>
+        <span>{{ row.middle }}</span>
+        <span>{{ row.right }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="concept.codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,178 @@
+<section class="demo-page">
+  <!-- Page Header -->
+  <div class="demo-header">
+    <div class="demo-badge">Feature 01</div>
+    <h1 class="demo-title">Dependent Dropdown</h1>
+    <p class="demo-subtitle">
+      Cascading select controls powered by Angular Reactive Forms. Each child
+      dropdown is <strong>disabled</strong> and populated only after its parent
+      is selected — simulating a KYC Address Form in a loan origination workflow.
+    </p>
+  </div>
+
+  <!-- Concept Tags -->
+  <div class="concept-tags">
+    <span class="tag">ReactiveFormsModule</span>
+    <span class="tag">valueChanges</span>
+    <span class="tag">enable() / disable()</span>
+    <span class="tag">takeUntil</span>
+    <span class="tag">RxJS delay()</span>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="demo-grid">
+    <!-- Left Column: App & Explanations -->
+    <div class="demo-interactive-column">
+      <!-- Form Card -->
+      <div class="card form-card">
+        <div class="card-header">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 21a9 9 0 100-18 9 9 0 000 18zM9 9l1.5 1.5L13.5 7M9 15l1.5 1.5 3-3" />
+          </svg>
+          <span>KYC Address Selector</span>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-body" id="dependent-dropdown-form">
+
+          <!-- Country -->
+          <div class="form-field">
+            <label for="country-select" class="field-label">
+              <span class="label-step">01</span> Country
+            </label>
+            <div class="select-wrapper">
+              <select id="country-select" formControlName="country" class="field-select"
+                [class.field-select--error]="form.get('country')!.invalid && form.get('country')!.touched">
+                <option value="" disabled>Select a country…</option>
+                <option *ngFor="let country of countries" [value]="country.code">
+                  {{ country.name }}
+                </option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+            <div *ngIf="form.get('country')!.invalid && form.get('country')!.touched" class="field-error">
+              Country is required
+            </div>
+          </div>
+
+          <!-- State / Region -->
+          <div class="form-field">
+            <label for="state-select" class="field-label" [class.field-label--disabled]="form.get('state')!.disabled">
+              <span class="label-step">02</span> State / Region
+              <span *ngIf="loadingStates" class="loading-badge">
+                <span class="spinner"></span> Loading…
+              </span>
+            </label>
+            <div class="select-wrapper" [class.select-wrapper--disabled]="form.get('state')!.disabled">
+              <select id="state-select" formControlName="state" class="field-select"
+                [class.field-select--error]="form.get('state')!.invalid && form.get('state')!.touched">
+                <option value="" disabled>
+                  {{ form.get('state')!.disabled ? '← Select a country first' : 'Select a state…' }}
+                </option>
+                <option *ngFor="let state of states" [value]="state.code">
+                  {{ state.name }}
+                </option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="form-field">
+            <label for="city-select" class="field-label" [class.field-label--disabled]="form.get('city')!.disabled">
+              <span class="label-step">03</span> City
+              <span *ngIf="loadingCities" class="loading-badge">
+                <span class="spinner"></span> Loading…
+              </span>
+            </label>
+            <div class="select-wrapper" [class.select-wrapper--disabled]="form.get('city')!.disabled">
+              <select id="city-select" formControlName="city" class="field-select"
+                [class.field-select--error]="form.get('city')!.invalid && form.get('city')!.touched">
+                <option value="" disabled>
+                  {{ form.get('city')!.disabled ? '← Select a state first' : 'Select a city…' }}
+                </option>
+                <option *ngFor="let city of cities" [value]="city.code">
+                  {{ city.name }}
+                </option>
+              </select>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn--ghost" (click)="onReset()" id="reset-form-btn">
+              Reset
+            </button>
+            <button type="submit" class="btn btn--primary" id="submit-form-btn"
+              [disabled]="form.invalid">
+              Confirm Selection
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Selection Summary -->
+      <div class="card result-card" *ngIf="selectedSummary">
+        <div class="result-icon">✓</div>
+        <div class="result-label">Selection Confirmed</div>
+        <div class="result-path">
+          <span class="result-item">{{ selectedSummary.country }}</span>
+          <span class="result-sep">›</span>
+          <span class="result-item">{{ selectedSummary.state }}</span>
+          <span class="result-sep">›</span>
+          <span class="result-item result-item--accent">{{ selectedSummary.city }}</span>
+        </div>
+        <div class="result-note">
+          This value would be submitted as part of a KYC / Loan Origination API payload.
+        </div>
+      </div>
+
+      <!-- How It Works Panel -->
+      <div class="card explain-card">
+        <h2 class="explain-title">How It Works</h2>
+        <div class="explain-steps">
+          <div class="explain-step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <strong>Country selected</strong> → <code>valueChanges</code> emits → resets state &amp; city controls →
+              calls <code>GeoService.getStates()</code> → on response, enables the State dropdown.
+            </div>
+          </div>
+          <div class="explain-step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <strong>State selected</strong> → same pattern → calls <code>GeoService.getCities()</code> →
+              enables City dropdown.
+            </div>
+          </div>
+          <div class="explain-step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <strong>Parent changed mid-flow</strong> → child controls are immediately disabled and reset,
+              preventing stale data from being submitted.
+            </div>
+          </div>
+          <div class="explain-step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <strong>Memory leak prevention</strong> → all subscriptions piped through
+              <code>takeUntil(this.destroy$)</code> — auto-unsubscribed on component destroy.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Code Viewer -->
+    <div class="demo-code-column">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

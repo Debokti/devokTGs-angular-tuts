@@ -1,0 +1,225 @@
+<section class="demo-page">
+  <!-- Page Header -->
+  <div class="demo-header">
+    <div class="demo-badge">Feature 02</div>
+    <h1 class="demo-title">Debounce API Guard</h1>
+    <p class="demo-subtitle">
+      Prevent rapid-fire API calls using RxJS <strong>debounceTime</strong>,
+      <strong>distinctUntilChanged</strong>, and <strong>switchMap</strong>.
+      Type in both panels and watch the API call counters in real-time.
+    </p>
+  </div>
+
+  <!-- Concept Tags -->
+  <div class="concept-tags">
+    <span class="tag">debounceTime(400)</span>
+    <span class="tag">distinctUntilChanged()</span>
+    <span class="tag">switchMap()</span>
+    <span class="tag">fromEvent()</span>
+    <span class="tag">takeUntil</span>
+  </div>
+
+  <!-- Debounce Explainer -->
+  <div class="card explainer-card">
+    <div class="explainer-header">
+      <svg class="explainer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M12 22a10 10 0 100-20 10 10 0 000 20z"/>
+      </svg>
+      <span>What is Debouncing?</span>
+    </div>
+    <div class="explainer-body">
+      <p class="explainer-text">
+        <strong>Debouncing</strong> is a technique that delays the execution of a function until
+        a specified time has elapsed since it was last invoked. In the context of API calls:
+      </p>
+      <div class="timeline-container">
+        <div class="timeline-label">Without Debounce (Naive) — typing "Arjun":</div>
+        <div class="timeline-row">
+          <div class="timeline-key fired">A<br><span>API</span></div>
+          <div class="timeline-key fired">r<br><span>API</span></div>
+          <div class="timeline-key fired">j<br><span>API</span></div>
+          <div class="timeline-key fired">u<br><span>API</span></div>
+          <div class="timeline-key fired">n<br><span>API</span></div>
+        </div>
+        <div class="timeline-verdict bad">5 keystrokes = 5 API calls 🔴</div>
+
+        <div class="timeline-label" style="margin-top:1rem;">With debounceTime(400ms) — typing "Arjun":</div>
+        <div class="timeline-row">
+          <div class="timeline-key skipped">A<br><span>wait…</span></div>
+          <div class="timeline-key skipped">r<br><span>wait…</span></div>
+          <div class="timeline-key skipped">j<br><span>wait…</span></div>
+          <div class="timeline-key skipped">u<br><span>wait…</span></div>
+          <div class="timeline-key final">n<br><span>API ✓</span></div>
+        </div>
+        <div class="timeline-verdict good">5 keystrokes = 1 API call 🟢 (after 400ms silence)</div>
+      </div>
+
+      <div class="operator-list">
+        <div class="operator-item">
+          <code class="op-name">debounceTime(400)</code>
+          <span class="op-desc">Emits a value only after 400ms have passed with no new emissions. Resets the timer on every new keystroke.</span>
+        </div>
+        <div class="operator-item">
+          <code class="op-name">distinctUntilChanged()</code>
+          <span class="op-desc">Skips the API call entirely if the value hasn't changed since the last emission. Prevents duplicate requests.</span>
+        </div>
+        <div class="operator-item">
+          <code class="op-name">switchMap()</code>
+          <span class="op-desc">Cancels the previous in-flight Observable when a new value arrives. Prevents race conditions and stale data.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value stat-value--red">{{ naiveCallCount }}</div>
+      <div class="stat-label">Naive API Calls</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-value stat-value--green">{{ debouncedCallCount }}</div>
+      <div class="stat-label">Debounced API Calls</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-value stat-value--gold">{{ callsSaved }}</div>
+      <div class="stat-label">Calls Saved</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-value stat-value--blue">{{ efficiencyPercent }}%</div>
+      <div class="stat-label">Efficiency Gain</div>
+    </div>
+    <button class="reset-btn" (click)="onReset()" id="reset-demo-btn">Reset Demo</button>
+  </div>
+
+  <!-- Side-by-Side Panels -->
+  <div class="panels-grid">
+
+    <!-- Naive Panel -->
+    <div class="panel panel--naive">
+      <div class="panel-header">
+        <div class="panel-badge panel-badge--bad">❌ Naive (No Debounce)</div>
+        <div class="panel-call-count">{{ naiveCallCount }} calls</div>
+      </div>
+      <div class="panel-body">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            #naiveInput
+            id="naive-search-input"
+            type="text"
+            class="search-input search-input--naive"
+            placeholder="Type a customer name…"
+            autocomplete="off"
+          />
+          <div class="loading-dot" [class.loading-dot--active]="naiveLoading"></div>
+        </div>
+        <div class="code-snippet">
+          <pre><code>// Every keystroke fires immediately
+fromEvent(input, 'input')
+  .subscribe(query => api.search(query));
+          </code></pre>
+        </div>
+        <div class="results-list" *ngIf="naiveResults.length > 0">
+          <div class="result-item" *ngFor="let customer of naiveResults">
+            <div class="customer-info">
+              <div class="customer-name">{{ customer.name }}</div>
+              <div class="customer-meta">{{ customer.accountNo }} · {{ customer.product }}</div>
+            </div>
+            <div class="risk-badge" [class]="getRiskClass(customer.risk)">{{ customer.risk }}</div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="naiveResults.length === 0 && naiveCallCount > 0 && !naiveLoading">
+          No results found
+        </div>
+        <div class="empty-state" *ngIf="naiveCallCount === 0">
+          Start typing to see naive behavior…
+        </div>
+      </div>
+    </div>
+
+    <!-- Debounced Panel -->
+    <div class="panel panel--debounced">
+      <div class="panel-header">
+        <div class="panel-badge panel-badge--good">✅ Debounced (400ms)</div>
+        <div class="panel-call-count">{{ debouncedCallCount }} calls</div>
+      </div>
+      <div class="panel-body">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            #debouncedInput
+            id="debounced-search-input"
+            type="text"
+            class="search-input search-input--debounced"
+            placeholder="Type a customer name…"
+            autocomplete="off"
+          />
+          <div class="loading-dot" [class.loading-dot--active]="debouncedLoading"></div>
+        </div>
+        <div class="code-snippet">
+          <pre><code>// Only fires after 400ms silence
+fromEvent(input, 'input').pipe(
+  debounceTime(400),
+  distinctUntilChanged(),
+  switchMap(q => api.search(q))
+).subscribe(results => ...);</code></pre>
+        </div>
+        <div class="results-list" *ngIf="debouncedResults.length > 0">
+          <div class="result-item" *ngFor="let customer of debouncedResults">
+            <div class="customer-info">
+              <div class="customer-name">{{ customer.name }}</div>
+              <div class="customer-meta">{{ customer.accountNo }} · {{ customer.product }}</div>
+            </div>
+            <div class="risk-badge" [class]="getRiskClass(customer.risk)">{{ customer.risk }}</div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="debouncedResults.length === 0 && debouncedCallCount > 0 && !debouncedLoading">
+          No results found
+        </div>
+        <div class="empty-state" *ngIf="debouncedCallCount === 0">
+          Start typing — API fires only after you pause…
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call Log -->
+  <div class="card log-card" *ngIf="callLog.length > 0">
+    <div class="log-header">Live API Call Log</div>
+    <div class="log-list">
+      <div class="log-entry" *ngFor="let entry of callLog"
+        [class.log-entry--naive]="entry.type === 'naive'"
+        [class.log-entry--debounced]="entry.type === 'debounced'">
+        <span class="log-time">{{ entry.timestamp }}</span>
+        <span class="log-type">{{ entry.type === 'naive' ? '❌ NAIVE' : '✅ DEBOUNCED' }}</span>
+        <span class="log-query">"{{ entry.query }}"</span>
+        <span class="log-hit" [class.log-hit--yes]="entry.hit" [class.log-hit--no]="!entry.hit">
+          {{ entry.hit ? 'API HIT' : 'SKIPPED' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Implementation Code Viewer -->
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <svg class="code-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+      </svg>
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

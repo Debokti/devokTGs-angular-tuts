@@ -1,0 +1,236 @@
+.demo-page {
+  padding: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.demo-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-badge {
+  width: fit-content;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.08);
+  color: #38bdf8;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.demo-title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.demo-subtitle {
+  max-width: 960px;
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.concept-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 6px;
+  background: rgba(96, 165, 250, 0.07);
+  color: #93c5fd;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 0.73rem;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.card-header,
+.code-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.scenario-card {
+  p {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+}
+
+.content-grid,
+.deep-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.content-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deep-grid {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-card {
+  padding: 1rem;
+
+  h2 {
+    margin: 0 0 0.65rem;
+    color: #f8fafc;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.83rem;
+    line-height: 1.55;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.8rem 0 0;
+    padding-left: 1.1rem;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+}
+
+.process-card {
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1.1rem 1.25rem 1.1rem 2.45rem;
+    color: #cbd5e1;
+    font-size: 0.83rem;
+    line-height: 1.5;
+  }
+
+  li::marker {
+    color: #38bdf8;
+    font-weight: 900;
+  }
+}
+
+.answer-card {
+  p {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    color: #e2e8f0;
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+}
+
+.trap-list {
+  padding: 0 1.25rem 1.25rem;
+
+  h3 {
+    margin: 0 0 0.65rem;
+    color: #fbbf24;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+.trap {
+  border-left: 3px solid rgba(251, 191, 36, 0.65);
+  padding: 0.55rem 0.7rem;
+  background: rgba(251, 191, 36, 0.06);
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  line-height: 1.45;
+
+  & + & {
+    margin-top: 0.45rem;
+  }
+}
+
+.comparison-table {
+  overflow-x: auto;
+}
+
+.comparison-head,
+.comparison-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.7fr) minmax(240px, 1fr) minmax(280px, 1.2fr);
+  min-width: 780px;
+}
+
+.comparison-head {
+  background: rgba(2, 6, 23, 0.6);
+
+  span {
+    padding: 0.75rem 1rem;
+    color: #38bdf8;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+.comparison-row {
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+
+  span {
+    padding: 0.8rem 1rem;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  span:first-child {
+    color: #f8fafc;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-weight: 800;
+  }
+}
+
+.code-card-body {
+  padding: 1rem;
+}

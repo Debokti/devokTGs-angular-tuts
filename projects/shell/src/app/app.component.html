@@ -1,0 +1,72 @@
+<div class="app-layout" [class.sidebar-collapsed]="!sidebarOpen">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-mark">AH</div>
+        <div class="logo-text" *ngIf="sidebarOpen">
+          <div class="logo-title">Angular</div>
+          <div class="logo-sub">Hands-On Lab</div>
+        </div>
+      </div>
+      <button class="sidebar-toggle" (click)="toggleSidebar()" id="sidebar-toggle-btn"
+        [attr.aria-label]="sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            *ngIf="sidebarOpen" d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            *ngIf="!sidebarOpen" d="M13 5l7 7-7 7M6 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label" *ngIf="sidebarOpen">Feature Demos</div>
+
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.path"
+        routerLinkActive="nav-item--active"
+        class="nav-item"
+        [class.nav-item--collapsed]="!sidebarOpen"
+        [id]="'nav-' + item.path.replace('/', '').replace('-', '_')"
+      >
+        <div class="nav-badge">{{ item.badge }}</div>
+        <div class="nav-icon" [innerHTML]="item.icon"></div>
+        <div class="nav-text" *ngIf="sidebarOpen">
+          <div class="nav-label">{{ item.label }}</div>
+          <div class="nav-description">{{ item.description }}</div>
+        </div>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="sidebarOpen">
+      <div class="footer-tech">
+        <span class="tech-tag">Angular 19</span>
+        <span class="tech-tag">RxJS 7</span>
+        <span class="tech-tag">Standalone</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-wrapper">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="breadcrumb-slash">/</span>
+        <span class="breadcrumb-text">Feature Demos</span>
+      </div>
+      <div class="top-bar-right">
+        <div class="env-badge">
+          <span class="env-dot"></span>
+          Development
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

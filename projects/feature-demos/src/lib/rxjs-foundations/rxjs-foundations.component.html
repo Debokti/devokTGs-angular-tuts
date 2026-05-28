@@ -1,0 +1,121 @@
+<section class="demo-page">
+  <div class="demo-header">
+    <div class="demo-badge">Feature 04</div>
+    <h1 class="demo-title">RxJS Foundations for Fintech Apps</h1>
+    <p class="demo-subtitle">
+      Precise definitions and live behavior for the primitives a senior Angular engineer uses before
+      wiring Java, FastAPI, market-data, fraud, or account-service APIs into the UI.
+    </p>
+  </div>
+
+  <div class="concept-tags">
+    <span class="tag">Observable</span>
+    <span class="tag">Observer</span>
+    <span class="tag">Subscription</span>
+    <span class="tag">Subject</span>
+    <span class="tag">BehaviorSubject</span>
+    <span class="tag">ReplaySubject</span>
+    <span class="tag">AsyncSubject</span>
+  </div>
+
+  <div class="concept-grid">
+    <article class="card concept-card" *ngFor="let concept of concepts">
+      <div class="concept-title">{{ concept.name }}</div>
+      <p>{{ concept.definition }}</p>
+      <div class="concept-meta">
+        <strong>Fintech use:</strong>
+        <span>{{ concept.fintechUse }}</span>
+      </div>
+      <div class="concept-note">{{ concept.seniorNote }}</div>
+    </article>
+  </div>
+
+  <div class="card subject-card">
+    <div class="card-header">
+      <span class="card-kicker">Subject type semantics</span>
+      <span>Late subscriber behavior is the key difference</span>
+    </div>
+    <div class="subject-grid">
+      <article class="subject-tile" *ngFor="let item of subjectTypes">
+        <h2>{{ item.name }}</h2>
+        <dl>
+          <div>
+            <dt>Memory</dt>
+            <dd>{{ item.memory }}</dd>
+          </div>
+          <div>
+            <dt>Late subscriber</dt>
+            <dd>{{ item.lateSubscriber }}</dd>
+          </div>
+          <div>
+            <dt>Completion</dt>
+            <dd>{{ item.completeBehavior }}</dd>
+          </div>
+        </dl>
+        <p>{{ item.fintechFit }}</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="demo-grid">
+    <div class="card action-card">
+      <div class="card-header">
+        <span class="card-kicker">Live execution</span>
+        <span>Run the demos and inspect notification order</span>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" type="button" (click)="runSubjectComparison()">
+          Run Subject Comparison
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="runColdHotDemo()">
+          Cold vs Hot
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="startPollingDemo()">
+          Start Polling
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="cancelPollingDemo()">
+          Cancel Polling
+        </button>
+      </div>
+      <div class="contract-list">
+        <div>
+          <strong>next(value)</strong>
+          delivers a normal value.
+        </div>
+        <div>
+          <strong>error(reason)</strong>
+          terminates the stream with failure. No complete follows.
+        </div>
+        <div>
+          <strong>complete()</strong>
+          terminates successfully. No more values follow.
+        </div>
+      </div>
+    </div>
+
+    <div class="card log-card">
+      <div class="card-header">
+        <span class="card-kicker">Notification log</span>
+        <span>{{ logs.length }} events</span>
+      </div>
+      <div class="log-list">
+        <div class="empty-state" *ngIf="logs.length === 0">
+          Run a demo to see Observable execution, multicast delivery, and subscription cancellation.
+        </div>
+        <div class="log-line" *ngFor="let log of logs" [attr.data-channel]="log.channel">
+          <span>{{ log.channel }}</span>
+          <p>{{ log.message }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

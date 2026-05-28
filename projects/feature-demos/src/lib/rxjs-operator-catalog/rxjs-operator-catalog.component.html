@@ -1,0 +1,110 @@
+<section class="demo-page">
+  <div class="demo-header">
+    <div class="demo-badge">Feature 05</div>
+    <h1 class="demo-title">RxJS Operator Catalog and Workbench</h1>
+    <p class="demo-subtitle">
+      A searchable RxJS 7.8 map for Angular fintech work: creation helpers, pipeable operators,
+      multicasting, schedulers, instance methods, and the full-stack decision points behind each choice.
+    </p>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric-card">
+      <span>{{ catalog.length }}</span>
+      <p>cataloged RxJS exports</p>
+    </div>
+    <div class="metric-card">
+      <span>{{ categories.length - 1 }}</span>
+      <p>operator groups</p>
+    </div>
+    <div class="metric-card">
+      <span>{{ filteredCatalog.length }}</span>
+      <p>visible after filters</p>
+    </div>
+  </div>
+
+  <div class="workbench-grid">
+    <div class="card pipeline-card">
+      <div class="card-header">
+        <span>Fintech pipeline workbench</span>
+        <small>Cancellation, sequencing, retry, caching, combination</small>
+      </div>
+      <div class="pipeline-actions">
+        <button type="button" class="btn btn-primary" (click)="runSearchPipeline()">
+          Account Search
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="runPaymentPipeline()">
+          Payment Batch
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="runRiskPipeline()">
+          Risk Snapshot
+        </button>
+      </div>
+      <div class="method-grid">
+        <article *ngFor="let method of methodCards">
+          <h2>{{ method.name }}</h2>
+          <p>{{ method.definition }}</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="card log-card">
+      <div class="card-header">
+        <span>Pipeline log</span>
+        <small>{{ logs.length }} events</small>
+      </div>
+      <div class="log-list">
+        <div class="empty-state" *ngIf="logs.length === 0">
+          Run a pipeline to see why switchMap, concatMap, forkJoin, retry, scan, and shareReplay are chosen.
+        </div>
+        <div class="log-line" *ngFor="let log of logs">
+          <span>{{ log.lane }}</span>
+          <p>{{ log.message }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card filter-card">
+    <div class="filter-row">
+      <label class="field">
+        <span>Search operators</span>
+        <input
+          type="search"
+          [(ngModel)]="query"
+          placeholder="Try switchMap, cache, retry, scheduler..."
+        />
+      </label>
+      <label class="field">
+        <span>Category</span>
+        <select [(ngModel)]="selectedCategory">
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="catalog-grid">
+    <article class="operator-card" *ngFor="let entry of filteredCatalog">
+      <div class="operator-topline">
+        <h2>{{ entry.name }}</h2>
+        <span [attr.data-kind]="entry.kind">{{ entry.kind }}</span>
+      </div>
+      <div class="operator-category">{{ entry.category }}</div>
+      <p>{{ entry.definition }}</p>
+      <div class="operator-use">
+        <strong>Fintech:</strong>
+        <span>{{ entry.fintechUse }}</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,266 @@
+.demo-page {
+  padding: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.demo-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-badge {
+  width: fit-content;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 999px;
+  background: rgba(74, 222, 128, 0.08);
+  color: #4ade80;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.demo-title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.demo-subtitle {
+  max-width: 940px;
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.flow-grid,
+.ops-grid,
+.guidance-card,
+.button-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.flow-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @media (max-width: 1080px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ops-grid {
+  grid-template-columns: 0.95fr 1.05fr;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.72);
+  overflow: hidden;
+}
+
+.flow-card {
+  padding: 1rem;
+
+  h2 {
+    margin: 0 0 0.65rem;
+    color: #f8fafc;
+    font-size: 1rem;
+  }
+
+  p {
+    min-height: 74px;
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+}
+
+.backend-box {
+  margin-top: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(96, 165, 250, 0.16);
+  border-radius: 8px;
+  background: rgba(96, 165, 250, 0.06);
+  color: #94a3b8;
+  font-size: 0.76rem;
+  line-height: 1.45;
+
+  span {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #93c5fd;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.66rem;
+  }
+}
+
+.operator-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
+.operator-chip {
+  border: 1px solid rgba(45, 212, 191, 0.18);
+  border-radius: 999px;
+  padding: 0.22rem 0.55rem;
+  background: rgba(45, 212, 191, 0.07);
+  color: #99f6e4;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 0.68rem;
+}
+
+.card-header,
+.code-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+  font-size: 0.86rem;
+  font-weight: 800;
+
+  small {
+    max-width: 55%;
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: right;
+  }
+}
+
+.button-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 1.25rem;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.65rem 0.7rem;
+  color: #f8fafc;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #15803d;
+}
+
+.btn-secondary {
+  border-color: rgba(96, 165, 250, 0.24);
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.architecture-list {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0 1.25rem 1.25rem;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  strong {
+    color: #f8fafc;
+  }
+}
+
+.log-list {
+  min-height: 300px;
+  max-height: 390px;
+  overflow: auto;
+  padding: 1rem;
+  background: #060913;
+}
+
+.empty-state {
+  padding: 2rem 1rem;
+  color: #64748b;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+.log-line {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border-left: 3px solid #4ade80;
+  background: rgba(255, 255, 255, 0.02);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+
+  & + & {
+    margin-top: 0.4rem;
+  }
+
+  span {
+    color: #4ade80;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.45;
+  }
+}
+
+.guidance-card {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 1rem;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.guidance-item {
+  padding: 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.35);
+
+  h2 {
+    margin: 0 0 0.45rem;
+    color: #fbbf24;
+    font-size: 0.9rem;
+  }
+
+  p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
+
+.code-card-body {
+  padding: 1rem;
+}

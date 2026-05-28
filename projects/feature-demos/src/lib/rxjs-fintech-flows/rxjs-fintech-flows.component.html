@@ -1,0 +1,107 @@
+<section class="demo-page">
+  <div class="demo-header">
+    <div class="demo-badge">Feature 06</div>
+    <h1 class="demo-title">RxJS Full-Stack Fintech Flow Simulator</h1>
+    <p class="demo-subtitle">
+      Three production-shaped Angular applications that coordinate Java or FastAPI services with RxJS:
+      aggregation, command protection, streaming surveillance, and UI state derived from asynchronous APIs.
+    </p>
+  </div>
+
+  <div class="flow-grid">
+    <article class="card flow-card" *ngFor="let flow of flows">
+      <h2>{{ flow.title }}</h2>
+      <p>{{ flow.purpose }}</p>
+      <div class="backend-box">
+        <span>Backend contract</span>
+        {{ flow.backendContract }}
+      </div>
+      <div class="operator-row">
+        <span class="operator-chip" *ngFor="let operator of flow.operators">{{ operator }}</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="ops-grid">
+    <div class="card action-card">
+      <div class="card-header">
+        <span>Run Applications</span>
+        <small>{{ activeSummary }}</small>
+      </div>
+      <div class="button-grid">
+        <button type="button" class="btn btn-primary" (click)="runLoanOrigination()">
+          Loan Origination
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="runTransferGuard()">
+          Transfer Guard
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="runTradeSurveillance()">
+          Trade Surveillance
+        </button>
+      </div>
+      <div class="architecture-list">
+        <div>
+          <strong>Angular:</strong>
+          streams model route changes, form changes, button commands, sockets, and cancellation.
+        </div>
+        <div>
+          <strong>Java or FastAPI:</strong>
+          endpoints stay request/response or event-stream based; RxJS composes them in the browser.
+        </div>
+        <div>
+          <strong>Copilot generated backend code:</strong>
+          keep contracts explicit. RxJS should not hide backend idempotency, retries, or auth policy.
+        </div>
+      </div>
+    </div>
+
+    <div class="card log-card">
+      <div class="card-header">
+        <span>Operations log</span>
+        <small>{{ logs.length }} events</small>
+      </div>
+      <div class="log-list">
+        <div class="empty-state" *ngIf="logs.length === 0">
+          Run an application to inspect the stream order and backend coordination decisions.
+        </div>
+        <div class="log-line" *ngFor="let log of logs">
+          <span>{{ log.app }}</span>
+          <p>{{ log.message }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card guidance-card">
+    <div class="guidance-item">
+      <h2>Use RxJS when</h2>
+      <p>
+        Multiple async sources interact over time: route plus form plus auth plus socket plus API. That is
+        where cancellation, combination, multicasting, and backpressure operators earn their keep.
+      </p>
+    </div>
+    <div class="guidance-item">
+      <h2>Use async/await when</h2>
+      <p>
+        A workflow is single-shot, sequential, and naturally request/response. In services, returning an
+        Observable is still useful because Angular can cancel it and compose it with UI streams.
+      </p>
+    </div>
+    <div class="guidance-item">
+      <h2>Senior review heuristic</h2>
+      <p>
+        Choose switchMap for replace-latest reads, concatMap for ordered writes, mergeMap for independent
+        parallel work, and exhaustMap for submit guards. Most bugs come from choosing the wrong flattening policy.
+      </p>
+    </div>
+  </div>
+
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>
