@@ -1,0 +1,234 @@
+<section class="demo-page">
+  <!-- Hidden evaluator to track Zone-triggered Change Detection runs -->
+  {{ registerCDTick() }}
+
+  <div class="demo-header">
+    <div class="demo-badge">Feature 16</div>
+    <h1 class="demo-title">Zone.js & Observable Memory Leaks</h1>
+    <p class="demo-subtitle">
+      Understand <strong>Zone.js async patching</strong>, optimize performance via <code>runOutsideAngular()</code>, and trace memory leaks caused by uncompleted subscriptions.
+    </p>
+  </div>
+
+  <div class="concept-tags">
+    <span class="tag">Zone.js</span>
+    <span class="tag">NgZone.runOutsideAngular()</span>
+    <span class="tag">memory leaks</span>
+    <span class="tag">ngOnDestroy</span>
+    <span class="tag">Subscription.unsubscribe()</span>
+    <span class="tag">takeUntil</span>
+  </div>
+
+  <!-- Main Playground Grid -->
+  <div class="playground-grid">
+    
+    <!-- Left: Zone.js Performance Sandbox -->
+    <div class="card zone-card">
+      <div class="card-header">
+        <span>Zone.js Execution Playground</span>
+      </div>
+      <div class="panel-body">
+        <p class="section-desc">
+          Zone.js intercepts async triggers (setTimeout, intervals) to run CD automatically. Running high-frequency timer ticks inside the zone degrades performance.
+        </p>
+
+        <!-- Timer Mode Toggle -->
+        <div class="timer-mode-selector">
+          <span class="label">Timer Placement Selection:</span>
+          <div class="radio-group mt-2">
+            <label class="radio-item" [class.active]="timerMode === 'inside'">
+              <input type="radio" name="timerMode" (change)="toggleTimerMode('inside')" [checked]="timerMode === 'inside'">
+              <span>Run INSIDE Angular Zone</span>
+            </label>
+            <label class="radio-item" [class.active]="timerMode === 'outside'">
+              <input type="radio" name="timerMode" (change)="toggleTimerMode('outside')" [checked]="timerMode === 'outside'">
+              <span>Run OUTSIDE Angular Zone</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Timer Controls -->
+        <div class="flex-buttons mt-4">
+          <button *ngIf="!isTimerRunning" class="action-btn btn-success" (click)="startTimer()">
+            Start 50ms Timer ▶️
+          </button>
+          <button *ngIf="isTimerRunning" class="action-btn btn-danger" (click)="stopTimer()">
+            Stop Timer ⏸️
+          </button>
+          <button class="action-btn btn-blue" (click)="forceUIDetect()">
+            Request Manual CD (detectChanges)
+          </button>
+          <button class="action-btn" (click)="resetZoneStats()">
+            Reset Stats
+          </button>
+        </div>
+
+        <!-- Displays -->
+        <div class="stats-display mt-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="stat-box-inner">
+              <span class="label">Timer Value (Count)</span>
+              <span class="value font-mono">{{ timerCount }}</span>
+              <span class="subtext" *ngIf="timerMode === 'outside' && isTimerRunning">
+                (Updating in memory but not painted on DOM!)
+              </span>
+            </div>
+            <div class="stat-box-inner">
+              <span class="label">Change Detection Sweeps</span>
+              <span class="value font-mono text-cyan-400">{{ changeDetectionTicks }}</span>
+              <span class="subtext">
+                (Spikes continuously when inside zone)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="performance-verdict mt-3" [class.bad]="timerMode === 'inside' && isTimerRunning" [class.good]="timerMode === 'outside' && isTimerRunning">
+          <span *ngIf="timerMode === 'inside' && isTimerRunning">
+            <strong>⚠️ Performance degradation:</strong> Every timer tick triggers a full application-wide change detection sweep!
+          </span>
+          <span *ngIf="timerMode === 'outside' && isTimerRunning">
+            <strong>✅ Highly Optimized:</strong> Timer triggers 0 change detection passes. Useful for drawing canvases or tracking web sockets.
+          </span>
+          <span *ngIf="!isTimerRunning">
+            Start the timer to analyze change detection triggers.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Memory Leak Simulator -->
+    <div class="card leaks-card">
+      <div class="card-header">
+        <span>Observable Memory Leak Simulator</span>
+      </div>
+      <div class="panel-body flex-col">
+        <p class="section-desc">
+          Spawn components that listen to infinite streams. Compare what happens when unmounting a leaky component vs. a clean component.
+        </p>
+
+        <!-- Spawn Controls -->
+        <div class="spawn-panel">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="label">Spawn Mode:</span>
+              <label class="switch-container">
+                <input type="checkbox" [(ngModel)]="leakToggle">
+                <span class="slider" [class.leaky]="leakToggle"></span>
+              </label>
+              <span class="spawn-label-text" [class.text-red-400]="leakToggle" [class.text-green-400]="!leakToggle">
+                {{ leakToggle ? 'Instantiate LEAKY Instance 💀' : 'Instantiate CLEAN Instance 🛡️' }}
+              </span>
+            </div>
+            
+            <button class="spawn-btn" [class.btn-red]="leakToggle" [class.btn-green]="!leakToggle" (click)="spawnInstance()">
+              Spawn Component
+            </button>
+          </div>
+        </div>
+
+        <!-- Rendered Instances -->
+        <div class="instances-layout my-3">
+          <div class="instances-title">Active Mounted Components in DOM</div>
+          <div class="instances-container" *ngIf="instancesList.length > 0; else noInstancesPlaceholder">
+            <div class="instance-row-item" *ngFor="let item of instancesList">
+              <app-leaky-child [instanceId]="item.id" [leakMode]="item.leak"></app-leaky-child>
+              <button class="destroy-btn" (click)="destroyInstance(item.id)">
+                Destroy Component 🗑️
+              </button>
+            </div>
+          </div>
+          <ng-template #noInstancesPlaceholder>
+            <div class="empty-instances">No components currently mounted in DOM.</div>
+          </ng-template>
+        </div>
+
+        <!-- Active background subscribers count -->
+        <div class="leak-stats-bar">
+          <div class="flex justify-between items-center">
+            <span class="stat-label-leak">Active Subscribers in Memory:</span>
+            <span class="stat-value-leak" [class.text-red-400]="activeSubscribers > instancesList.length" [class.text-green-400]="activeSubscribers === instancesList.length">
+              {{ activeSubscribers }}
+            </span>
+          </div>
+          <div class="warning-text mt-2" *ngIf="activeSubscribers > instancesList.length">
+            ⚠️ <strong>Memory Leak Detected!</strong> You have <code>{{ activeSubscribers - instancesList.length }}</code> subscriber stream(s) still executing in the background even though their components are removed from the DOM!
+          </div>
+        </div>
+
+        <!-- Live Terminal logs -->
+        <div class="leak-terminal mt-3">
+          <div class="terminal-header flex justify-between items-center">
+            <span>Subscriber Stream Execution Terminal</span>
+            <button class="terminal-clear" (click)="clearLeakedLogs()">Clear</button>
+          </div>
+          <div class="terminal-body font-mono">
+            <div *ngFor="let log of leakLogs" class="terminal-row" [class.text-red-400]="log.includes('🔴')" [class.text-green-400]="log.includes('🟢')">
+              {{ log }}
+            </div>
+            <div *ngIf="leakLogs.length === 0" class="terminal-empty">Terminal idle. Waiting for ticker emissions...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Deep Dive Explainer -->
+  <div class="deep-grid">
+    <div class="card explanation-card">
+      <div class="card-header">
+        <span>Zone.js Under the Hood</span>
+      </div>
+      <div class="card-body-text">
+        <p><strong>What is Zone.js?</strong></p>
+        <p>
+          Zone.js monkey-patches asynchronous browser APIs (such as <code>Promise</code>, <code>setTimeout</code>, <code>addEventListener</code>, and <code>XMLHttpRequest</code>) at application startup.
+        </p>
+        <p>
+          By interception, it informs Angular whenever an asynchronous task completes. Angular then triggers a change detection cycle starting from the root component to synchronize the state with the DOM.
+        </p>
+        <p><strong>Optimizing with runOutsideAngular:</strong></p>
+        <p>
+          Heavy background tasks (like animations, polling rates, WebGL renders, or canvas loops) that run repeatedly will trigger auto change detection constantly, causing UI lagging.
+        </p>
+        <p>
+          Wrapping these tasks in <code>ngZone.runOutsideAngular(() => ...)</code> bypasses the Zone.js wrapper. The callbacks execute silently. The UI is updated only when the developer calls <code>cdr.detectChanges()</code> or when code rejoins the Angular Zone.
+        </p>
+      </div>
+    </div>
+
+    <div class="card interview-card">
+      <div class="card-header">
+        <span>Senior Interview Prep: Memory Leaks</span>
+      </div>
+      <div class="card-body-text">
+        <div class="qa-item">
+          <h4>Q: How do Observables cause memory leaks in Angular?</h4>
+          <p>A: When a component subscribes to an infinite/long-lived Observable (e.g. global state, router events, or interval tickers), the Observable maintains a reference to the subscriber's callback function.
+             If the component is destroyed but the subscription remains active, the JavaScript garbage collector cannot reclaim the component because the Observable still holds a reference to it. This leaks both the component class instances and its DOM elements.
+          </p>
+        </div>
+        <div class="qa-item mt-3">
+          <h4>Q: What are the three primary mitigation patterns?</h4>
+          <p>A: 
+             <br>1. <strong>AsyncPipe:</strong> Automatically handles subscription and unsubscription of observables directly in the template.
+             <br>2. <strong>takeUntil:</strong> Use an unsubscription Subject (e.g., <code>destroy$</code>) and pipe <code>takeUntil(this.destroy$)</code>, firing it inside <code>ngOnDestroy()</code>.
+             <br>3. <strong>takeUntilDestroyed (Angular 16+):</strong> A developer-friendly injector-scoped operator that unsubscribes automatically when the current context (component/service) is destroyed.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Code Viewer -->
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

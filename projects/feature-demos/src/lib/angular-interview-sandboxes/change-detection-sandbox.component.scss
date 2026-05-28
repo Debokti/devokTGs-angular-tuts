@@ -1,0 +1,256 @@
+.playground-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 1.5rem;
+
+  @media (max-width: 950px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.controls-section {
+  h5 {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+  }
+  
+  .section-desc {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin: 0 0 0.75rem;
+  }
+}
+
+.flex-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 0.6rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: rgba(30, 41, 59, 0.5);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(148, 163, 184, 0.35);
+    background: rgba(30, 41, 59, 0.8);
+  }
+
+  &.btn-blue {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.35);
+    color: #60a5fa;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.25);
+      border-color: rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  &.btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #f87171;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+  }
+
+  &.btn-success {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #4ade80;
+
+    &:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+  }
+}
+
+.current-state-card {
+  font-size: 0.72rem;
+  color: #64748b;
+
+  code {
+    display: block;
+    margin-top: 0.25rem;
+    font-family: 'Fira Code', monospace;
+    color: #fbbf24;
+    background: rgba(15, 23, 42, 0.4);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.05);
+  }
+}
+
+/* Stats counter styles */
+.stats-bar {
+  display: flex;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #60a5fa;
+}
+
+.stat-label {
+  font-size: 0.6rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Mitigation Selector Options */
+.mitigation-selector {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.08);
+
+  .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+}
+
+.radio-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  input[type="radio"] {
+    margin: 0;
+    accent-color: #60a5fa;
+  }
+
+  &:hover {
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+
+  &.active {
+    border-color: #60a5fa;
+    color: #f1f5f9;
+    background: rgba(96, 165, 250, 0.05);
+  }
+}
+
+/* Children layout */
+.children-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.child-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.col-explainer {
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.4;
+
+  strong {
+    color: #cbd5e1;
+  }
+}
+
+/* Explainer panels styling */
+.deep-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.explanation-card, .interview-card {
+  padding: 1.5rem;
+}
+
+.card-body-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-top: 1rem;
+
+  h4 {
+    color: #e2e8f0;
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  p {
+    margin: 0 0 1rem;
+  }
+
+  ul {
+    padding-left: 1.25rem;
+    margin: 0 0 1rem;
+  }
+}
+
+.text-amber-500 { color: #f59e0b; }
+.text-green-400 { color: #4ade80; }
+.mt-4 { margin-top: 1rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-2 { margin-top: 0.5rem; }

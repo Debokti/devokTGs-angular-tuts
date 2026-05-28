@@ -1,0 +1,295 @@
+.playground-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.control-card, .sandbox-card {
+  height: 100%;
+}
+
+.control-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-desc {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+}
+
+.strategy-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.strategy-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  input[type="radio"] {
+    margin-top: 0.25rem;
+    accent-color: #60a5fa;
+  }
+
+  &:hover {
+    border-color: rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+  }
+
+  &.active {
+    border-color: #60a5fa;
+    background: rgba(96, 165, 250, 0.05);
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.05);
+  }
+
+  &.option-naive.active {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  &.option-safe.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  &.option-cssvar.active {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+  }
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.option-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+
+  .active.option-naive & { color: #f87171; }
+  .active.option-safe & { color: #60a5fa; }
+  .active.option-cssvar & { color: #4ade80; }
+}
+
+.option-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+/* compiled CSS output visualizer */
+.css-inspector {
+  display: flex;
+  flex-direction: column;
+  background: rgba(9, 14, 26, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.inspector-header {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.75rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+}
+
+.inspector-code {
+  pre {
+    margin: 0;
+    padding: 0.75rem;
+  }
+  code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem;
+    color: #60a5fa;
+    line-height: 1.5;
+  }
+}
+
+/* Sandbox visual rendering */
+.sandbox-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sandbox-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.parent-container, .sibling-container {
+  padding: 1.25rem;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.parent-container {
+  background: rgba(30, 41, 59, 0.15);
+  border: 2px dashed rgba(96, 165, 250, 0.25);
+
+  &.apply-naive {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.02);
+  }
+
+  &.apply-safe {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.02);
+  }
+}
+
+.sibling-container {
+  background: rgba(30, 41, 59, 0.15);
+  border: 2px dashed rgba(248, 113, 113, 0.25);
+}
+
+.parent-label, .sibling-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}
+
+/* Scoping compiler simulation logic */
+
+.apply-naive {
+  /* NAIVE: strips scoping, style bleeds globally! */
+  ::ng-deep .themed-box {
+    background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+    border-color: #f87171 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important;
+  }
+}
+
+.apply-safe {
+  /* SAFE: prefixing with :host scopes the ::ng-deep to children */
+  :host ::ng-deep .themed-box {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+    border-color: #60a5fa !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
+  }
+}
+
+/* Warnings and highlights */
+.status-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  color: #f87171;
+  font-size: 0.78rem;
+  line-height: 1.4;
+
+  code {
+    background: rgba(239, 68, 68, 0.15);
+    padding: 0.1rem 0.25rem;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.7rem;
+  }
+}
+
+.status-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  color: #4ade80;
+  font-size: 0.78rem;
+  line-height: 1.4;
+
+  code {
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.1rem 0.25rem;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.7rem;
+  }
+}
+
+/* Explainer Details Layout */
+.deep-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.explanation-card, .interview-card {
+  padding: 1.5rem;
+}
+
+.card-body-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-top: 1rem;
+
+  h4 {
+    color: #e2e8f0;
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  p {
+    margin: 0 0 1rem;
+  }
+
+  pre {
+    background: rgba(9, 14, 26, 0.6);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin: 0.5rem 0 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.05);
+
+    code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.72rem;
+      color: #f87171;
+    }
+  }
+}
+
+.mt-4 { margin-top: 1rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-2 { margin-top: 0.5rem; }

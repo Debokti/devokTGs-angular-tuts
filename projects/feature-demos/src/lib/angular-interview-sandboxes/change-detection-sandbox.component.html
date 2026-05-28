@@ -1,0 +1,175 @@
+<section class="demo-page">
+  <!-- Hidden evaluator to count parent Change Detection runs -->
+  {{ registerParentCD() }}
+
+  <div class="demo-header">
+    <div class="demo-badge">Feature 15</div>
+    <h1 class="demo-title">OnPush Change Detection & ngDoCheck</h1>
+    <p class="demo-subtitle">
+      Deep-dive into <strong>OnPush optimization</strong>, observe how object mutations bypass CD, and harness <code>ngDoCheck</code> with <code>ChangeDetectorRef</code> for custom dirty checking.
+    </p>
+  </div>
+
+  <div class="concept-tags">
+    <span class="tag">ChangeDetectionStrategy.OnPush</span>
+    <span class="tag">ngDoCheck</span>
+    <span class="tag">ChangeDetectorRef</span>
+    <span class="tag">markForCheck()</span>
+    <span class="tag">detectChanges()</span>
+  </div>
+
+  <div class="playground-grid">
+    <!-- Left Panel: Trigger Actions -->
+    <div class="card triggers-card">
+      <div class="card-header">
+        <span>Change Detection Controller</span>
+      </div>
+      <div class="panel-body">
+        <div class="controls-section">
+          <h5>1. Mutate Input Property</h5>
+          <p class="section-desc">Observe how child components respond when we update values in the parent.</p>
+          <div class="flex-buttons">
+            <button class="action-btn btn-danger" (click)="mutateInPlace()">
+              Mutate In-Place ⚠️
+            </button>
+            <button class="action-btn btn-success" (click)="reassignReference()">
+              Reassign Reference ✅
+            </button>
+          </div>
+          <div class="current-state-card mt-2">
+            <span>Parent Profile State:</span>
+            <code>name: "{{ userProfile.name }}", balance: \${{ userProfile.balance }}</code>
+          </div>
+        </div>
+
+        <div class="controls-section mt-4">
+          <h5>2. Angular Change Detection Triggers</h5>
+          <p class="section-desc">Trigger a change detection sweep from the root down. Does the OnPush component update its DOM?</p>
+          <div class="flex-buttons">
+            <button class="action-btn btn-blue" (click)="triggerParentCD()">
+              Trigger CD Sweep (Event Click)
+            </button>
+            <button class="action-btn" (click)="resetAll()">
+              Reset Counters
+            </button>
+          </div>
+        </div>
+
+        <!-- CD Stats -->
+        <div class="stats-bar mt-4">
+          <div class="stat-item">
+            <span class="stat-value stat-value--blue">{{ parentCDCount }}</span>
+            <span class="stat-label">Parent CD Ticks</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center/Right Panel: Interactive Sandbox -->
+    <div class="card render-sandbox-card">
+      <div class="card-header">
+        <span>Active Component Comparison & ngDoCheck Escape Hatches</span>
+      </div>
+      <div class="panel-body">
+        
+        <!-- Mitigation Selector -->
+        <div class="mitigation-selector">
+          <span class="label">ngDoCheck Custom Dirty Check Mitigation (for OnPush):</span>
+          <div class="radio-group mt-2">
+            <label class="radio-item" [class.active]="mitigation === 'none'">
+              <input type="radio" name="mitigation" (change)="setMitigation('none')" [checked]="mitigation === 'none'">
+              <span>Do Nothing (Ignored Mutation)</span>
+            </label>
+            <label class="radio-item" [class.active]="mitigation === 'markForCheck'">
+              <input type="radio" name="mitigation" (change)="setMitigation('markForCheck')" [checked]="mitigation === 'markForCheck'">
+              <span>Call markForCheck()</span>
+            </label>
+            <label class="radio-item" [class.active]="mitigation === 'detectChanges'">
+              <input type="radio" name="mitigation" (change)="setMitigation('detectChanges')" [checked]="mitigation === 'detectChanges'">
+              <span>Call detectChanges()</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Children grid -->
+        <div class="children-layout mt-4">
+          <div class="child-col">
+            <app-cd-child-default [userData]="userProfile"></app-cd-child-default>
+            <p class="col-explainer mt-2">
+              <strong>Default</strong> component checks its template and updates on <strong>every parent change detection sweep</strong>, regardless of reference changes or mutations.
+            </p>
+          </div>
+          <div class="child-col">
+            <app-cd-child-onpush [userData]="userProfile" [mitigationStrategy]="mitigation"></app-cd-child-onpush>
+            <p class="col-explainer mt-2">
+              <strong>OnPush</strong> component skips template checks. 
+              <span *ngIf="mitigation === 'none'" class="text-amber-500">
+                It ignores the in-place mutation because no reference change or event occurred inside its subtree.
+              </span>
+              <span *ngIf="mitigation === 'markForCheck'" class="text-green-400">
+                Custom check inside <code>ngDoCheck</code> detects mutation and calls <code>markForCheck()</code>. It will render on the next CD tick.
+              </span>
+              <span *ngIf="mitigation === 'detectChanges'" class="text-green-400">
+                Custom check inside <code>ngDoCheck</code> detects mutation and immediately calls <code>detectChanges()</code> to force a synchronous repaint.
+              </span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Deep Dive Explainer -->
+  <div class="deep-grid">
+    <div class="card explanation-card">
+      <div class="card-header">
+        <span>The ngDoCheck & OnPush Interaction</span>
+      </div>
+      <div class="card-body-text">
+        <p><strong>A common misconception:</strong> "If a component is OnPush, ngDoCheck doesn't run."</p>
+        <p>
+          <strong>This is FALSE.</strong> <code>ngDoCheck</code> executes on <em>every single change detection cycle</em> initiated by Angular, even if the component is configured with <code>OnPush</code>.
+        </p>
+        <p>
+          Why? Because <code>ngDoCheck</code> is designed exactly for this: to let developers perform their own custom dirty-checking when Angular's default reference-comparison checks are bypassed (such as object/array mutations).
+        </p>
+        <p>
+          If your custom check finds a change, you can instruct Angular to verify the view using one of two methods:
+        </p>
+        <ul>
+          <li><code>cdr.markForCheck()</code>: Marks the component and all its ancestors as dirty. The actual template evaluation is deferred until the normal CD sweep reaches them.</li>
+          <li class="mt-2"><code>cdr.detectChanges()</code>: Forces Angular to immediately run change detection for this specific component subtree. Very fast, but can trigger errors if called out of order.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card interview-card">
+      <div class="card-header">
+        <span>Senior Interview Prep: OnPush</span>
+      </div>
+      <div class="card-body-text">
+        <div class="qa-item">
+          <h4>Q: When does OnPush Change Detection actually run?</h4>
+          <p>A: An OnPush component's template is checked ONLY when:
+            <br>1. An <code>&#64;Input()</code> memory reference changes (comparison uses <code>===</code>).
+            <br>2. An event listener (e.g., click) triggers inside the component or its children.
+            <br>3. An <code>AsyncPipe</code> bound in the template receives a new stream emission.
+            <br>4. ChangeDetectorRef APIs (<code>markForCheck()</code> / <code>detectChanges()</code>) are explicitly invoked.
+            <br>5. A Signal read inside the template publishes a new value.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Code Viewer -->
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>

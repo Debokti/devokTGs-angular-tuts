@@ -1,0 +1,158 @@
+<section class="demo-page">
+  <div class="demo-header">
+    <div class="demo-badge">Feature 14</div>
+    <h1 class="demo-title">Lifecycle Hooks Execution & Mutability</h1>
+    <p class="demo-subtitle">
+      Trace the chronological order of all 8 hooks, test the <strong>&#64;Input() mutation trap</strong>, and compare <code>ngOnInit</code> vs <code>ngAfterViewInit</code>.
+    </p>
+  </div>
+
+  <div class="concept-tags">
+    <span class="tag">ngOnChanges</span>
+    <span class="tag">ngOnInit</span>
+    <span class="tag">ngDoCheck</span>
+    <span class="tag">ngAfterViewInit</span>
+    <span class="tag">ngOnDestroy</span>
+    <span class="tag">SimpleChanges</span>
+  </div>
+
+  <div class="playground-grid">
+    <!-- Left: Controls and Component State -->
+    <div class="card interactive-card">
+      <div class="card-header">
+        <span>Lifecycle Triggers & Sandbox</span>
+      </div>
+      <div class="panel-body">
+        
+        <div class="controls-section">
+          <h5>1. Primitive Inputs</h5>
+          <p class="section-desc">Changing a primitive updates the reference in memory and triggers <code>ngOnChanges</code>.</p>
+          <button class="action-btn btn-blue" (click)="incrementPrimitive()">
+            Increment Primitive ({{ primitiveValue }})
+          </button>
+        </div>
+
+        <div class="controls-section mt-4">
+          <h5>2. Object Inputs (Mutability Trap)</h5>
+          <p class="section-desc">Mutating an object property in-place leaves the memory reference unchanged, so <code>ngOnChanges</code> is bypassed.</p>
+          <div class="flex-buttons">
+            <button class="action-btn btn-danger" (click)="mutateObjectInPlace()">
+              Mutate Property In-Place ⚠️
+            </button>
+            <button class="action-btn btn-success" (click)="reassignObjectRef()">
+              Reassign Object Reference ✅
+            </button>
+          </div>
+          <div class="current-object-state mt-2">
+            <strong>Current object reference state:</strong>
+            <code>{{ '{' }} name: "{{ objectValue.name }}", experience: {{ objectValue.experience }} {{ '}' }}</code>
+          </div>
+        </div>
+
+        <div class="controls-section mt-4">
+          <h5>3. Component Mount State</h5>
+          <p class="section-desc">Destroying a component runs <code>ngOnDestroy</code> to clean up active resources and prevent memory leaks.</p>
+          <button class="action-btn" [class.btn-warning]="isChildMounted" [class.btn-success]="!isChildMounted" (click)="toggleChildMount()">
+            {{ isChildMounted ? 'Destroy / Unmount Component' : 'Instantiate / Mount Component' }}
+          </button>
+        </div>
+
+        <!-- Render Target -->
+        <div class="render-boundary mt-4">
+          <div class="boundary-title">Component Mount Target</div>
+          <div class="mount-box" *ngIf="isChildMounted; else unmountedPlaceholder">
+            <app-lifecycle-child 
+              [primitiveVal]="primitiveValue" 
+              [objectVal]="objectValue">
+            </app-lifecycle-child>
+          </div>
+          <ng-template #unmountedPlaceholder>
+            <div class="unmounted-placeholder">
+              <span class="placeholder-icon">📴</span>
+              <p>Component is currently destroyed. Click Mount to instantiate.</p>
+            </div>
+          </ng-template>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: Live Log Console -->
+    <div class="card log-console-card">
+      <div class="card-header flex justify-between items-center">
+        <span>Chronological Hooks Log Console</span>
+        <button class="clear-btn" (click)="clearLogs()">Clear Console</button>
+      </div>
+      <div class="console-body">
+        <div class="console-headers">
+          <span class="col-time">Time</span>
+          <span class="col-hook">Hook Fired</span>
+          <span class="col-desc">Details & Context</span>
+        </div>
+        <div class="console-logs-list" *ngIf="logs.length > 0; else noLogsPlaceholder">
+          <div class="log-row" *ngFor="let log of logs" [class]="'hook-' + log.hook.toLowerCase()">
+            <span class="col-time">{{ log.timestamp }}</span>
+            <span class="col-hook">
+              <span class="hook-badge">{{ log.hook }}</span>
+            </span>
+            <span class="col-desc">{{ log.details }}</span>
+          </div>
+        </div>
+        <ng-template #noLogsPlaceholder>
+          <div class="no-logs">
+            <p>No lifecycle hooks logged yet. Interact with the controls on the left to fire events.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Explainer Grid -->
+  <div class="deep-grid">
+    <div class="card explanation-card">
+      <div class="card-header">
+        <span>ngOnInit vs. ngAfterViewInit</span>
+      </div>
+      <div class="card-body-text">
+        <p>A classic senior developer interview theme is the boundary between these two hooks:</p>
+        <ul>
+          <li>
+            <strong>ngOnInit</strong> runs once class properties and input bindings are resolved. It is the ideal place for data-fetching. However, <em>the component's template elements are NOT rendered yet</em>. Querying <code>&#64;ViewChild</code> in ngOnInit returns <code>undefined</code>.
+          </li>
+          <li class="mt-2">
+            <strong>ngAfterViewInit</strong> runs when the component's HTML template and all of its child components have been fully created, rendered, and attached to the DOM. This is the first place you can safely manipulate the DOM or read element sizes.
+          </li>
+        </ul>
+        <blockquote class="trap-quote mt-3">
+          <strong>⚠️ The "ExpressionChangedAfterItHasBeenCheckedError" Trap:</strong> Modifying a data-bound property inside <code>ngAfterViewInit</code> triggers this error because Angular has already checked the DOM output. If you must modify template state in <code>ngAfterViewInit</code>, defer it using <code>setTimeout()</code> or run it in a microtask.
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="card execution-sequence-card">
+      <div class="card-header">
+        <span>Execution Sequence Reference</span>
+      </div>
+      <div class="sequence-list">
+        <div class="seq-item"><span class="num">1</span> <span class="name">ngOnChanges</span> <span class="detail">Before ngOnInit; whenever input reference changes.</span></div>
+        <div class="seq-item"><span class="num">2</span> <span class="name">ngOnInit</span> <span class="detail">After inputs are first bound. Perfect for async queries.</span></div>
+        <div class="seq-item"><span class="num">3</span> <span class="name">ngDoCheck</span> <span class="detail">Runs during every check cycle for custom dirty checks.</span></div>
+        <div class="seq-item"><span class="num">4</span> <span class="name">ngAfterContentInit</span> <span class="detail">Once external projected content (ng-content) is ready.</span></div>
+        <div class="seq-item"><span class="num">5</span> <span class="name">ngAfterContentChecked</span> <span class="detail">Every check cycle after projected content completes.</span></div>
+        <div class="seq-item"><span class="num">6</span> <span class="name">ngAfterViewInit</span> <span class="detail">Once component template views and child views are bound.</span></div>
+        <div class="seq-item"><span class="num">7</span> <span class="name">ngAfterViewChecked</span> <span class="detail">Every check cycle after views have been validated.</span></div>
+        <div class="seq-item"><span class="num">8</span> <span class="name">ngOnDestroy</span> <span class="detail">Right before the component is unmounted. Unsubscribe now!</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Code Viewer -->
+  <div class="card code-card-full">
+    <div class="code-card-header">
+      <span>Implementation Source Code</span>
+    </div>
+    <div class="code-card-body">
+      <lib-code-viewer [files]="codeFiles"></lib-code-viewer>
+    </div>
+  </div>
+</section>
